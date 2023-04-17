@@ -1,0 +1,20 @@
+main {
+  display: grid;
+  grid-template-rows: 1fr 2fr 1fr;
+}
+.time-container {
+  justify-self: center;
+}
+.time-container .date {
+}
+.time-container .time {
+}
+.time-container .apm {
+}
+
+.icon-container {
+  justify-self: center;
+}
+.temp-container {
+  justify-self: center;
+}
