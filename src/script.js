@@ -1,31 +1,10 @@
 import converter from './convertXY.js';
-
-//Web API = geolocation(lat, lon) => Convert to xy position => fetch FORECAST API
-
-function getLocation() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition((position) => {
-      let lon;
-      let lat;
-      lon = position.coords.longitude.toFixed(2);
-      lat = position.coords.latitude.toFixed(2);
-      let xy = converter.toXY(lat, lon);
-      console.log(xy);
-      const wrap = async () => {
-        const res = await fetch(
-          `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=vvpTO1TiQTn8PogQ5TxNuHFsBs3r%2FxEFN8JzGe%2BaiQmURQPWznWyY9vzW1D21L%2BABtV2%2FL9ranr%2F0KzB4u8f2g%3D%3D&pageNo=1&numOfRows=1000&dataType=JSON&base_date=20230417&base_time=1500&nx=${xy.x}&ny=${xy.y}`
-        );
-        const json = await res.json();
-        console.log(json);
-      };
-      wrap();
-    });
-  }
-}
-getLocation();
+const $ = document.querySelector.bind(document);
+//########TIMER
 let Target_date = document.querySelector('.date');
 let Target = document.querySelector('.time');
 let Target_apm = document.querySelector('.apm');
+
 function clock() {
   let time = new Date();
 
@@ -51,4 +30,60 @@ function clock() {
   Target_apm.innerText = `${ampm}`;
 }
 clock();
-setInterval(clock, 1000); // 1초마다 실행
+setInterval(clock, 1000);
+//Web API = geolocation(lat, lon) => Convert to xy position => fetch FORECAST API
+
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition((position) => {
+    let lon = position.coords.longitude.toFixed(2);
+    let lat = position.coords.latitude.toFixed(2);
+    let xy = converter.toXY(lat, lon);
+    const wrap = async () => {
+      try {
+        const res = await fetch(
+          `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=vvpTO1TiQTn8PogQ5TxNuHFsBs3r%2FxEFN8JzGe%2BaiQmURQPWznWyY9vzW1D21L%2BABtV2%2FL9ranr%2F0KzB4u8f2g%3D%3D&pageNo=1&numOfRows=1000&dataType=JSON&base_date=20230417&base_time=1500&nx=${xy.x}&ny=${xy.y}`
+        );
+        const json = await res.json();
+        //PTY[0] - 강수형태, T1H[3] - 기온
+        const temp = json.response.body.items.item[3].obsrValue;
+        const pty = json.response.body.items.item[0].obsrValue;
+        console.log(temp);
+        createIcon(Number(pty));
+        showTemp(Number(temp));
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    wrap();
+  });
+}
+
+function createIcon(value) {
+  const icon = document.createElement('div');
+  icon.classList.add('material-symbols-outlined');
+  $('.icon-container').appendChild(icon);
+  switch (value) {
+    case 0:
+      return ($('.material-symbols-outlined').innerText = 'sunny');
+    case 1:
+      return ($('.material-symbols-outlined').innerText = 'rainy');
+    case 2:
+      return ($('.material-symbols-outlined').innerText = 'rainy snow');
+    case 3:
+      return ($('.material-symbols-outlined').innerText = 'weather snowy');
+    case 5:
+      return ($('.material-symbols-outlined').innerText = 'waterdrop');
+    case 6:
+      return ($('.material-symbols-outlined').innerText = 'snowing');
+    case 7:
+      return ($('.material-symbols-outlined').innerText = 'snowing heavy');
+  }
+}
+
+function showTemp(value) {
+  const celcius = document.createElement('div');
+  celcius.classList.add('temperature');
+  celcius.innerText = `${value}℃`;
+  $('.temp-container').appendChild(celcius);
+  console.log(celcius);
+}

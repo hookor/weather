@@ -15,6 +15,10 @@ main {
 .icon-container {
   justify-self: center;
 }
+.icon-container .icon {
+}
 .temp-container {
   justify-self: center;
+}
+.temp-container .temperature {
 }
