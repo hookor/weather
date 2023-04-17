@@ -5,15 +5,21 @@ let Target_date = document.querySelector('.date');
 let Target = document.querySelector('.time');
 let Target_apm = document.querySelector('.apm');
 
-function clock() {
-  let time = new Date();
+let time = new Date();
+let hours = time.getHours();
+let minutes = time.getMinutes();
+let year = time.getFullYear();
+let month = time.getMonth() + 1;
+let date = time.getDate();
+//base_date, base_time for query
+let cur = `${year}${month >= 10 ? month : '0' + month}${
+  date >= 10 ? date : '0' + date
+}`;
+let curHour = `${hours >= 10 ? hours : '0' + hours}00`;
 
-  let month = time.getMonth();
-  let date = time.getDate();
+function clock() {
   let day = time.getDay();
   let week = ['일', '월', '화', '수', '목', '금', '토'];
-  let hours = time.getHours();
-  let minutes = time.getMinutes();
   let seconds = time.getSeconds();
   let ampm = 'AM';
   if (hours > 12) {
@@ -41,20 +47,19 @@ if (navigator.geolocation) {
     const wrap = async () => {
       try {
         const res = await fetch(
-          `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=vvpTO1TiQTn8PogQ5TxNuHFsBs3r%2FxEFN8JzGe%2BaiQmURQPWznWyY9vzW1D21L%2BABtV2%2FL9ranr%2F0KzB4u8f2g%3D%3D&pageNo=1&numOfRows=1000&dataType=JSON&base_date=20230417&base_time=1500&nx=${xy.x}&ny=${xy.y}`
+          `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=vvpTO1TiQTn8PogQ5TxNuHFsBs3r%2FxEFN8JzGe%2BaiQmURQPWznWyY9vzW1D21L%2BABtV2%2FL9ranr%2F0KzB4u8f2g%3D%3D&pageNo=1&numOfRows=1000&dataType=JSON&base_date=${cur}&base_time=${curHour}&nx=${xy.x}&ny=${xy.y}`
         );
         const json = await res.json();
         //PTY[0] - 강수형태, T1H[3] - 기온
         const temp = json.response.body.items.item[3].obsrValue;
         const pty = json.response.body.items.item[0].obsrValue;
-        console.log(temp);
         createIcon(Number(pty));
         showTemp(Number(temp));
       } catch (err) {
         console.error(err);
       }
     };
-    wrap();
+    setInterval(wrap(), 600000); // 10min
   });
 }
 
@@ -85,5 +90,4 @@ function showTemp(value) {
   celcius.classList.add('temperature');
   celcius.innerText = `${value}℃`;
   $('.temp-container').appendChild(celcius);
-  console.log(celcius);
 }
