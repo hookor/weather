@@ -15,22 +15,29 @@ let date = time.getDate();
 let cur = `${year}${month >= 10 ? month : '0' + month}${
   date >= 10 ? date : '0' + date
 }`;
-let curHour = `${hours >= 10 ? hours : '0' + hours}00`;
+console.log(hours);
+let curHour = `${
+  hours >= 10 && minutes >= 40 ? hours : hours === '00' ? hours : hours - 1
+}${minutes < 40 ? '00' : minutes}`;
+console.log(curHour);
 
 function clock() {
-  let day = time.getDay();
+  let current = new Date();
+  let clockhours = time.getHours();
+  let day = current.getDay();
+  let clockminutes = time.getMinutes();
   let week = ['일', '월', '화', '수', '목', '금', '토'];
-  let seconds = time.getSeconds();
+  let seconds = current.getSeconds();
   let ampm = 'AM';
-  if (hours > 12) {
+  if (clockhours > 12) {
     ampm = 'PM';
-    hours %= 12;
+    clockhours %= 12;
   }
 
   Target_date.innerText = `${month + 1}월 ${date}일 ${week[day]}요일`;
 
-  Target.innerText = `${hours < 10 ? `0${hours}` : hours}:${
-    minutes < 10 ? `0${minutes}` : minutes
+  Target.innerText = `${clockhours < 10 ? `0${clockhours}` : clockhours}:${
+    clockminutes < 10 ? `0${clockminutes}` : clockminutes
   }:${seconds < 10 ? `0${seconds}` : seconds}`;
 
   Target_apm.innerText = `${ampm}`;
@@ -59,7 +66,7 @@ if (navigator.geolocation) {
         console.error(err);
       }
     };
-    setInterval(wrap(), 600000); // 10min
+    wrap();
   });
 }
 
