@@ -12,15 +12,23 @@ let year = time.getFullYear();
 let month = time.getMonth() + 1;
 let date = time.getDate();
 //base_date, base_time for query
-let cur = `${year}${month >= 10 ? month : '0' + month}${
-  date >= 10 ? date : '0' + date
-}`;
+console.log(typeof date);
+
 console.log(hours);
 let curHour = `${
   hours >= 10 && minutes >= 40 ? hours : hours === '00' ? hours : hours - 1
 }${minutes < 40 ? '00' : minutes}`;
 console.log(curHour);
-
+let cur = `${year}${month >= 10 ? month : '0' + month}${
+  date >= 10 && Number(curHour) > 40
+    ? date
+    : date < 10 && Number(curHour) > 40
+    ? '0' + date
+    : date < 10 && Number(curHour) > 40 && date !== 1
+    ? date - 1
+    : date
+}`;
+// month......
 function clock() {
   let current = new Date();
   let clockhours = time.getHours();
