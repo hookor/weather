@@ -31,9 +31,9 @@ let cur = `${year}${month >= 10 ? month : '0' + month}${
 // month......
 function clock() {
   let current = new Date();
-  let clockhours = time.getHours();
+  let clockhours = current.getHours();
   let day = current.getDay();
-  let clockminutes = time.getMinutes();
+  let clockminutes = current.getMinutes();
   let week = ['일', '월', '화', '수', '목', '금', '토'];
   let seconds = current.getSeconds();
   let ampm = 'AM';
@@ -42,7 +42,7 @@ function clock() {
     clockhours %= 12;
   }
 
-  Target_date.innerText = `${month + 1}월 ${date}일 ${week[day]}요일`;
+  Target_date.innerText = `${month}월 ${date}일 ${week[day]}요일`;
 
   Target.innerText = `${clockhours < 10 ? `0${clockhours}` : clockhours}:${
     clockminutes < 10 ? `0${clockminutes}` : clockminutes
